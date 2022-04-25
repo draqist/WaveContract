@@ -14,7 +14,7 @@ const main = async () => {
   await waveTxn.wait();
 
   console.log("------     -----"); 
-
+  
   waveCount = await waveContract.getTotalWaves();
   console.log("------     -----");
 
