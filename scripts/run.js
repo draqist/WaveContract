@@ -1,38 +1,74 @@
-const main = async () => { 
-  const [Draq, User] = await hre.ethers.getSigners();
+const main = async () => {
   const waveContractFactory = await hre.ethers.getContractFactory("WavePortal");
   const waveContract = await waveContractFactory.deploy();
   await waveContract.deployed();
-  console.log(`Deployed WavePortal Contract to:  ${waveContract.address}`);
-  console.log("------     -----");
-  console.log(`Deployed WavePortal Contract by:  ${Draq.address}`);
-  
-  let waveCount
+  console.log("Contract addy:", waveContract.address);
+
+  let waveCount;
   waveCount = await waveContract.getTotalWaves();
-  console.log("------     -----");
-  let waveTxn = await waveContract.wave()
-  await waveTxn.wait();
+  console.log(waveCount.toNumber());
 
-  console.log("------     -----"); 
-  
-  waveCount = await waveContract.getTotalWaves();
-  console.log("------     -----");
+  /**
+   * Let's send a few waves!
+   */
+  let waveTxn = await waveContract.wave("A message!");
+  await waveTxn.wait(); // Wait for the transaction to be mined
 
-  waveTxn = await waveContract.connect(User).wave()
-  await waveTxn.wait();
-  console.log("------     -----");
+  const [_, randomPerson] = await hre.ethers.getSigners();
+  waveTxn = await waveContract.connect(randomPerson).wave("Another message!");
+  await waveTxn.wait(); // Wait for the transaction to be mined
 
-  waveCount = await waveContract.getTotalWaves();
-}
+  let allWaves = await waveContract.getAllWaves();
+  console.log(allWaves);
+};
 
-const runMain = async () => { 
+const runMain = async () => {
   try {
     await main();
-    process.exit(0)
+    process.exit(0);
   } catch (error) {
     console.log(error);
     process.exit(1);
   }
-}
+};
 
-runMain()
+runMain();
+
+// const main = async () => { 
+//   const [Draq, User] = await hre.ethers.getSigners();
+//   const waveContractFactory = await hre.ethers.getContractFactory("WavePortal");
+//   const waveContract = await waveContractFactory.deploy();
+//   await waveContract.deployed();
+//   console.log(`Deployed WavePortal Contract to:  ${waveContract.address}`);
+//   console.log("------     -----");
+//   console.log(`Deployed WavePortal Contract by:  ${Draq.address}`);
+  
+//   let waveCount
+//   waveCount = await waveContract.getTotalWaves();
+//   console.log("------     -----");
+//   let waveTxn = await waveContract.wave()
+//   await waveTxn.wait();
+
+//   console.log("------     -----"); 
+  
+//   waveCount = await waveContract.getTotalWaves();
+//   console.log("------     -----");
+
+//   waveTxn = await waveContract.connect(User).wave()
+//   await waveTxn.wait();
+//   console.log("------     -----");
+
+//   waveCount = await waveContract.getTotalWaves();
+// }
+
+// const runMain = async () => { 
+//   try {
+//     await main();
+//     process.exit(0)
+//   } catch (error) {
+//     console.log(error);
+//     process.exit(1);
+//   }
+// }
+
+// runMain()
